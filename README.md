@@ -6,7 +6,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.x-646CFF.svg?logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.x-38B2AC.svg?logo=tailwind-css)](https://tailwindcss.com/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1.svg?logo=mysql)](https://www.mysql.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-336791.svg?logo=postgresql)](https://www.postgresql.org/)
 [![Redis](https://img.shields.io/badge/Redis-7--Alpine-DC382D.svg?logo=redis)](https://redis.io/)
 [![Apache Kafka](https://img.shields.io/badge/Apache%20Kafka-3.7.0-231F20.svg?logo=apachekafka)](https://kafka.apache.org/)
 [![Docker](https://img.shields.io/badge/Docker%20Compose-Ready-2496ED.svg?logo=docker)](https://www.docker.com/)
@@ -69,13 +69,13 @@ flowchart TD
     end
 
     subgraph Infrastructure["Docker Compose Infrastructure"]
-        MySQL[("MySQL 8.0 (Port 3306)\nRelational Data & Outbox")]
+        Postgres[("PostgreSQL\nRelational Data & Outbox")]
         Redis[("Redis 7 (Port 6379)\nDistributed Seat Hold & Locks")]
         Kafka[("Apache Kafka 3.7 (Port 9092)\nEvent Streaming")]
         Mailpit["Mailpit (Port 1025 / 8025)\nSMTP & Web Inbox"]
     end
 
-    Services -->|JPA / Flyway| MySQL
+    Services -->|JPA / Flyway| Postgres
     Services -->|Lettuce Distributed Locks| Redis
     Services -->|Produce Events| Kafka
     Kafka -->|Consume Events| Consumer
@@ -92,7 +92,7 @@ flowchart TD
 | **Icons & Style** | Lucide React, Lenis Scroll | Modern visual design and smooth scroll animations |
 | **Backend** | Spring Boot 3.2.5, Java 21 | High-throughput, robust REST API server |
 | **Security** | Spring Security 6, JJWT (0.12.5), BCrypt | Stateless JWT authorization and role-based permissions |
-| **Primary Database** | MySQL 8.0, Hibernate, Spring Data JPA | Relational data persistence with Flyway migrations |
+| **Primary Database** | PostgreSQL, Hibernate, Spring Data JPA | Relational data persistence with Flyway migrations |
 | **Distributed Caching** | Redis 7 (Alpine), Lettuce Driver | 5-minute seat reservations and rate limiting |
 | **Event Streaming** | Apache Kafka 3.7.0 (KRaft Mode) | Asynchronous booking events & Transactional Outbox |
 | **QR Code Engine** | Google ZXing (3.5.2) | Generation & verification of check-in QR codes |
@@ -216,7 +216,7 @@ The React + TypeScript application is located inside the `frontend/frontend` fol
 | **Spring Boot Actuator** | `8080` | [http://localhost:8080/actuator](http://localhost:8080/actuator) | System Metrics & Health |
 | **Mailpit Web Mail** | `8025` | [http://localhost:8025](http://localhost:8025) | View sent confirmation emails |
 | **Mailpit SMTP** | `1025` | `localhost:1025` | Spring Boot Mail Sender |
-| **MySQL Database** | `3306` | `jdbc:mysql://localhost:3306/projectsmart` | User: `projectsmart` \| Pass: `projectsmart` |
+| **PostgreSQL Database** | `5432` | `jdbc:postgresql://localhost:5432/projectsmart` | User: `postgres` \| Pass: `postgres` (or Render Managed PostgreSQL) |
 | **Redis Cache** | `6379` | `localhost:6379` | Default No-Auth |
 | **Apache Kafka Broker** | `9092` | `localhost:9092` | KRaft Mode (Broker & Controller) |
 

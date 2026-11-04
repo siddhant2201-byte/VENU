@@ -29,25 +29,14 @@ export const Login: React.FC = () => {
         const { token, id, email: userEmail, fullName, roles } = res.data.data;
         login(token, { id, email: userEmail, fullName, roles });
         navigate(redirectFrom, { replace: true });
+      } else {
+        setError(res.data?.message || 'Login failed. Please check your credentials.');
       }
     } catch (err: any) {
       if (!err.response) {
-
-        const inferredName = email.split('@')[0].replace(/[._]/g, ' ') || 'VENU Member';
-        const formattedName = inferredName.charAt(0).toUpperCase() + inferredName.slice(1);
-        const isOrganizer = email.toLowerCase().includes('organizer') || email.toLowerCase().includes('director');
-        const role = isOrganizer ? 'ROLE_ORGANIZER' : 'ROLE_ATTENDEE';
-
-        const mockUser = {
-          id: 1,
-          email: email || 'attendee@venu-platform.com',
-          fullName: formattedName,
-          roles: [role, 'ROLE_USER'],
-        };
-        login('mock-sovereign-jwt-session', mockUser);
-        navigate(redirectFrom, { replace: true });
+        setError('Cannot connect to authentication server. Please check your network connection or verify the backend service is running.');
       } else {
-        setError(err.response.data?.message || 'Invalid credentials. Please verify your email and password.');
+        setError(err.response.data?.message || 'Invalid email or password. Please verify your credentials.');
       }
     } finally {
       setLoading(false);

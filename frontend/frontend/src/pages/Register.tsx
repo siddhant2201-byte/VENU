@@ -23,20 +23,24 @@ export const Register: React.FC = () => {
 
   const handleCreateProfile = async (targetRole: 'ROLE_ATTENDEE' | 'ROLE_ORGANIZER') => {
     setError(null);
-    setLoading(true);
 
-    const isOrg = targetRole === 'ROLE_ORGANIZER';
-    const fallbackName = isOrg ? 'VENU Executive Organizer' : 'VIP Attendee';
-    const resolvedName = fullName.trim() || fallbackName;
-    const resolvedEmail = email.trim() || `${isOrg ? 'organizer' : 'attendee'}_${Date.now().toString().slice(-4)}@venu-platform.com`;
-    const resolvedPassword = password || 'VenuAuth2026!';
+    const resolvedName = fullName.trim();
+    const resolvedEmail = email.trim();
+    const resolvedPassword = password;
+
+    if (!resolvedName || !resolvedEmail || !resolvedPassword) {
+      setError('Please provide your full name, email address, and a secure password.');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const res = await apiClient.post('/auth/register', {
         email: resolvedEmail,
         password: resolvedPassword,
         fullName: resolvedName,
-        phoneNumber: phoneNumber || undefined,
+        phoneNumber: phoneNumber.trim() || undefined,
         role: targetRole,
       });
 
@@ -44,17 +48,15 @@ export const Register: React.FC = () => {
         const { token, id, email: userEmail, fullName: name, roles } = res.data.data;
         login(token, { id, email: userEmail, fullName: name, roles });
         navigate(redirectFrom, { replace: true });
+      } else {
+        setError(res.data?.message || 'Registration failed. Please try again.');
       }
     } catch (err: any) {
-
-      const mockUser = {
-        id: Math.floor(Math.random() * 1000) + 10,
-        email: resolvedEmail,
-        fullName: resolvedName,
-        roles: [targetRole, 'ROLE_USER'],
-      };
-      login(`mock-jwt-${targetRole.toLowerCase()}-${Date.now()}`, mockUser);
-      navigate(redirectFrom, { replace: true });
+      if (!err.response) {
+        setError('Cannot connect to authentication server. Please verify the backend service is running.');
+      } else {
+        setError(err.response.data?.message || 'Registration failed. Email may already be in use or details invalid.');
+      }
     } finally {
       setLoading(false);
     }
